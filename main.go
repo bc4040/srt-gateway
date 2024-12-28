@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"os"
-	"strconv"
 	"time"
 )
 
@@ -35,52 +34,35 @@ func main() {
 	sender1Passphrase := os.Getenv("PASSPHRASE_OUT1")
 	sender2Passphrase := os.Getenv("PASSPHRASE_OUT2")
 
-	_ingestport := os.Getenv("PORT_IN")
-	_sender1port := os.Getenv("PORT_OUT1")
-	_sender2port := os.Getenv("PORT_OUT2")
+	var sender1enabled bool
+	var sender2enabled bool
 
 	var ingestport16 uint16
 	var sender1port16 uint16
 	var sender2port16 uint16
 
-	if _ingestport == "" {
-		fmt.Println("Error - No ingest port defined.  Define environment var PORT_IN=")
-		os.Exit(1)
-	} else {
-		ingestport, _ := strconv.ParseUint(_ingestport, 10, 16)
-		ingestport16 = uint16(ingestport)
-	}
+	ingestport16 = 9800
+	sender1port16 = 9801
+	sender2port16 = 9802
 
-	if _sender1port == "" {
-		fmt.Println("Error - No sender 1 port defined.  Define environment var PORT_OUT1=")
-		os.Exit(1)
-	} else {
-		sender1port, _ := strconv.ParseUint(_sender1port, 10, 16)
-		sender1port16 = uint16(sender1port)
-
-	}
-
-	if _sender2port == "" {
-		fmt.Println("WARNING - No sender 2 port defined.  Define environment var PORT_OUT2=")
-	} else {
-		sender2port, _ := strconv.ParseUint(_sender2port, 10, 16)
-		sender2port16 = uint16(sender2port)
-
-	}
-
-	if ingestPassphrase == "" {
+	if ingestPassphrase == "" { // if no passphrase defined for ingest, exit
 		fmt.Println("Error - No ingest passphrase defined.  Define environment var PASSPHRASE_IN=")
 		os.Exit(1)
 	}
 
-	if sender1Passphrase == "" {
+	if sender1Passphrase == "" { // if no passphrase defined for sender 1, exit
 		fmt.Println("Error - No sender 1 passphrase defined.  Define environment var PASSPHRASE_OUT1=")
 		os.Exit(1)
+	} else {
+		sender1enabled = true
 	}
 
-	if _sender2port != "" && sender2Passphrase == "" {
-		fmt.Println("Error - No sender 2 passphrase defined.  Define environment var PASSPHRASE_OUT2=")
-		os.Exit(1)
+	if sender2Passphrase == "" { // if no passphrase defined for sender 2, assume it's not in use
+		fmt.Println("Warning - No sender 2 passphrase defined.  Define environment var PASSPHRASE_OUT2=")
+		fmt.Println("Assuming sender 2 is not in use.")
+		sender1enabled = false
+	} else {
+		sender2enabled = true
 	}
 
 	// Make status bools to track if socket is open & streaming or not
@@ -102,9 +84,11 @@ func main() {
 	}
 
 	// Call the sender and await a connection
-	go sender(sender1port16, DataChannel, &Channel1Open, sender1Passphrase)
+	if sender1enabled == true {
+		go sender(sender1port16, DataChannel, &Channel1Open, sender1Passphrase)
+	}
 
-	if _sender2port != "" {
+	if sender2enabled == true {
 		go sender(sender2port16, DataChannel2, &Channel2Open, sender2Passphrase)
 	}
 
