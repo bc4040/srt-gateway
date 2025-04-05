@@ -10,7 +10,10 @@ func Truncate(s []byte, to int) []byte {
 	return s[:to]
 }
 
-func filecreate(filename string) *os.File {
+func filecreate() *os.File {
+
+	currentTime := time.Now()
+	filename := currentTime.Format("2006-01-02_00-00-00")
 	Myfile, err := os.OpenFile(filename+".ts", os.O_WRONLY|os.O_CREATE, 0666)
 	if err != nil {
 		fmt.Println("Unable to open file")
@@ -65,7 +68,7 @@ func main() {
 		sender2enabled = true
 	}
 
-	filecreate("newfile")
+	filecreate()
 
 	// Make status bools to track if socket is open & streaming or not
 	var IngestOpen bool
