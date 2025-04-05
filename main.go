@@ -55,6 +55,7 @@ func main() {
 
 	if sender1Passphrase == "" { // if no passphrase defined for sender 1, exit
 		fmt.Println("Error - No sender 1 passphrase defined.  Define environment var PASSPHRASE_OUT1=")
+		fmt.Println("We cannot continue")
 		os.Exit(1)
 	} else {
 		sender1enabled = true
@@ -63,7 +64,7 @@ func main() {
 	if sender2Passphrase == "" { // if no passphrase defined for sender 2, assume it's not in use
 		fmt.Println("Warning - No sender 2 passphrase defined.  Define environment var PASSPHRASE_OUT2=")
 		fmt.Println("Assuming sender 2 is not in use.")
-		sender1enabled = false
+		sender2enabled = false
 	} else {
 		sender2enabled = true
 	}
