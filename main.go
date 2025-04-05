@@ -82,6 +82,7 @@ func main() {
 	}
 
 	if recordenabled {
+		fmt.Println("Creating file for recording....")
 		filecreate()
 	}
 
