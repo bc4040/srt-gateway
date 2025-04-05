@@ -13,7 +13,7 @@ func Truncate(s []byte, to int) []byte {
 func filecreate() *os.File {
 
 	currentTime := time.Now()
-	filename := currentTime.Format("2006-01-02_00-00-00")
+	filename := currentTime.Format("2006-01-02_15-04-05")
 	Myfile, err := os.OpenFile(filename+".ts", os.O_WRONLY|os.O_CREATE, 0666)
 	if err != nil {
 		fmt.Println("Unable to open file")
