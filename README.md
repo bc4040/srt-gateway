@@ -8,6 +8,8 @@ The ports for each channel are currently hard-coded.
 - Sender 1: 9801/udp
 - Sender 2: 9802/udp
 
+9800 should be exposed to your LAN and 9801-9802 can be exposed to the internet.
+
 **It works like this:**
 
 - Point your encoder to the ingest channel of srt-gateway
@@ -38,8 +40,11 @@ docker build -t srt-gateway .
 # Run with Docker
 
 Be sure to set the environment variables in your Docker run command
-
  
+
  ```
  docker run --rm -it -e "PASSPHRASE_IN=<passwordhere>" -e "PASSPHRASE_OUT1=<passwordhere>" srt-gateway
 ```
+
+
+In production, set restart policy to unless-stopped so that the application will restart after loss of ingest (the application gracefully closes when the ingest socket closes)
