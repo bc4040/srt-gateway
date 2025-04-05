@@ -42,6 +42,8 @@ func main() {
 	var sender2enabled bool
 	var recordenabled bool
 
+	var fileptr *os.File
+
 	var ingestport16 uint16
 	var sender1port16 uint16
 	var sender2port16 uint16
@@ -83,7 +85,7 @@ func main() {
 
 	if recordenabled {
 		fmt.Println("Creating file for recording....")
-		filecreate()
+		fileptr = filecreate()
 	}
 
 	// Make status bools to track if socket is open & streaming or not
@@ -125,7 +127,7 @@ func main() {
 		}
 
 		// If file write is enabled, write this buffer to file:
-		//n, _ := thisfile.Write(thisdata)
+		_, _ = fileptr.Write(thisBufferStruct.buffer)
 
 	}
 
