@@ -65,6 +65,8 @@ func main() {
 		sender2enabled = true
 	}
 
+	filecreate("newfile")
+
 	// Make status bools to track if socket is open & streaming or not
 	var IngestOpen bool
 	var Channel1Open bool
