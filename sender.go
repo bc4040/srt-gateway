@@ -49,9 +49,6 @@ func sender(portno uint16, DataChannel chan bufferStruct, status *bool, passphra
 			}
 			thisdata := Truncate(thisBufferStruct.buffer, thisBufferStruct.length)
 
-			// If file write is enabled, write this buffer to file:
-			//n, _ := thisfile.Write(thisdata)
-
 			n, _ := s.Write(thisdata) // WRITE INTO THE SOCKET
 			if n == 0 {
 				// Something went wrong or the channel closed gracefully?

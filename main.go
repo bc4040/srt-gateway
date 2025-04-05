@@ -36,9 +36,11 @@ func main() {
 	ingestPassphrase := os.Getenv("PASSPHRASE_IN")
 	sender1Passphrase := os.Getenv("PASSPHRASE_OUT1")
 	sender2Passphrase := os.Getenv("PASSPHRASE_OUT2")
+	record := os.Getenv("record")
 
 	var sender1enabled bool
 	var sender2enabled bool
+	var recordenabled bool
 
 	var ingestport16 uint16
 	var sender1port16 uint16
@@ -48,18 +50,22 @@ func main() {
 	sender1port16 = 9801
 	sender2port16 = 9802
 
-	if ingestPassphrase == "" { // if no passphrase defined for ingest, exit
+	// CHECK IF INGEST CHANNEL HAS A PASSPHRASE DEFINED
+	if ingestPassphrase == "" { // if no passphrase defined for ingest...
 		fmt.Println("Error - No ingest passphrase defined.  Define environment var PASSPHRASE_IN=")
 		os.Exit(1)
 	}
 
-	if sender1Passphrase == "" { // if no passphrase defined for sender 1, exit
+	// CHECK IF SENDER 1 IS ENABLED, IF NOT - EXIT
+	if sender1Passphrase == "" { // if no passphrase defined for sender 1...
 		fmt.Println("Error - No sender 1 passphrase defined.  Define environment var PASSPHRASE_OUT1=")
 		fmt.Println("We cannot continue")
 		os.Exit(1)
 	} else {
 		sender1enabled = true
 	}
+
+	// CHECK IF SENDER 2 IS ENABLED
 
 	if sender2Passphrase == "" { // if no passphrase defined for sender 2, assume it's not in use
 		fmt.Println("Warning - No sender 2 passphrase defined.  Define environment var PASSPHRASE_OUT2=")
@@ -69,7 +75,15 @@ func main() {
 		sender2enabled = true
 	}
 
-	filecreate()
+	if record == "true" {
+		recordenabled = true
+	} else {
+		recordenabled = false
+	}
+
+	if recordenabled {
+		filecreate()
+	}
 
 	// Make status bools to track if socket is open & streaming or not
 	var IngestOpen bool
@@ -77,9 +91,9 @@ func main() {
 	var Channel2Open bool
 
 	//Make channels
-	IngestChannel := make(chan bufferStruct, 100)  // Inbound
-	DataChannel := make(chan bufferStruct, 10000)  // Outbound 1
-	DataChannel2 := make(chan bufferStruct, 10000) // Outbound 1
+	IngestChannel := make(chan bufferStruct, 100)  // Ingest ("inbound")
+	DataChannel := make(chan bufferStruct, 10000)  // Sender 1 ("outbound")
+	DataChannel2 := make(chan bufferStruct, 10000) // Sender 2 ("outbound")
 
 	// Call the ingester and await some data
 	go ingest(ingestport16, IngestChannel, &IngestOpen, ingestPassphrase)
@@ -99,10 +113,7 @@ func main() {
 	}
 
 	for { // multiplex data as we get it from the ingester...
-		//fmt.Printf("-") // tick
-
 		thisBufferStruct := <-IngestChannel
-		//fmt.Println(thisBufferGlob.seqno)
 
 		if Channel1Open {
 			DataChannel <- thisBufferStruct
@@ -111,7 +122,10 @@ func main() {
 		if Channel2Open {
 			DataChannel2 <- thisBufferStruct
 		}
+
+		// If file write is enabled, write this buffer to file:
+		//n, _ := thisfile.Write(thisdata)
+
 	}
 
-	os.Exit(0) // Main loop died
 }
