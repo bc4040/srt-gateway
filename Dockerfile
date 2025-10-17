@@ -2,27 +2,18 @@
     
     WORKDIR /libsrt
     ENV DEBIAN_FRONTEND=noninteractive
-    
-    RUN apt-get update && apt-get install -y git build-essential
-    RUN apt-get install -y tclsh pkg-config cmake libssl-dev curl
-    
+
+    # UPDATE Ubuntu
+    RUN apt-get update && apt-get install -y git build-essential tclsh pkg-config cmake libssl-dev curl
     # INSTALL libsrt
-    RUN git clone https://github.com/Haivision/srt.git /libsrt
-    RUN ./configure
-    RUN make
-    RUN make install
-    
+    RUN git clone https://github.com/Haivision/srt.git /libsrt && ./configure && make && make install
 
     WORKDIR /app
     # setup go environment
-    RUN curl -LO https://golang.org/dl/go1.21.0.linux-amd64.tar.gz
-    RUN tar -C /usr/local -xzf go1.21.0.linux-amd64.tar.gz
-
+    RUN curl -LO https://golang.org/dl/go1.21.0.linux-amd64.tar.gz && tar -C /usr/local -xzf go1.21.0.linux-amd64.tar.gz
     ENV PATH=$PATH:/usr/local/go/bin
     ENV GOPATH=/root/go
     ENV PATH=$PATH:$GOPATH/bin
-
-    RUN go version
 
     COPY . .
 
