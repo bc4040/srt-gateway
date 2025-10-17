@@ -29,7 +29,8 @@ func sender(portno uint16, _DataChannelStruct *DataChannel, passphrase string) {
 		defer sck.Close()
 		sck.Listen(1)
 		fmt.Println("[SENDER] " + thisPortString + " Waiting for connection in SRT LISTENER mode")
-		s, peeraddr, _ := sck.Accept() //socket, peeraddr, err := sck.Accept()
+		s, _peeraddr, _ := sck.Accept() //socket, peeraddr, err := sck.Accept()
+		peeraddr := _peeraddr.String()
 		fmt.Println("[SENDER] " + thisPortString + " Got connection from client: " + peeraddr + ", starting to send data...")
 		_DataChannelStruct.channelOpen = true
 
