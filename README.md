@@ -3,13 +3,15 @@
  
  ### An example use case:
  You have a SDI/HDMI to SRT hardware encoder on a local LAN and want to securely expose it to the internet. 
- srt-gateway can sit between the encoder (LAN) and the internet (WAN).  Interview viewers connect to srt-gateway to view the encoded stream.
+ srt-gateway can sit between the encoder (LAN) and the internet (WAN).  Remote viewers connect to srt-gateway to view the encoded stream.
+
+ This prevents the need to expose an insecure hardware encoder appliance to the internet.
 
  srt-gateway provides one ingest (input) channel and two sender (output) channels.   Currently, only one client can connect to a single channel at a time.
 
  This can be multiplied at scale by running multiple instances in Docker.
  
- # Running via Docker
+ ## Running via Docker
  Although it can run as a standalone binary, the project is intended to be run inside a Docker container.
 
  There are 3 passphrases you can define.  The first two are mandatory.
@@ -21,9 +23,9 @@
  
  `docker run --rm -it -e "PASSPHRASE_IN=password" -e "PASSPHRASE_OUT1=password" srt-gateway`
 
-## Custom port mapping
+### Custom port mapping
 
- Ports are hardcoded in the binary, but can be exposed to the outside world on differnet ports via your Docker container configuration.
+ Ports are hardcoded in the binary, but can be exposed to the outside world on different ports via your Docker container configuration.
  There are 3 ports you can map.
  ```
  :9800 - The ingest port (input) (srt listen mode)
