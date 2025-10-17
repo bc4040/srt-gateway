@@ -33,3 +33,16 @@
  :9801 - The first sender (srt listen mode)
  :9802 - The second sender (srt listen mode)
  ```
+
+We can further define specific port mapping with Docker
+
+Example:
+We want to use port 5000 on the local LAN for ingest.  In this example the LAN IP address of the srt-gateway host is 192.168.1.100.
+
+We want to use port 5050 (sender 1) and 5051 (sender 2) on the WAN.  We'll define these on all interfaces.
+
+ `docker run --rm -it -e "PASSPHRASE_IN=password" -e "PASSPHRASE_OUT1=password" -e "PASSPHRASE_OUT2=password"  -p 192.168.1.100:5000:9800 -p 5050:9801 -p 5051:9802 srt-gateway`
+
+Now you can point your hardware encoder to 192.168.1.100:5000 in caller mode, and it will be relayed to WAN ports 5050 and 5051.  
+
+Connect to the srt-gateway host with a client viewer in caller mode to srt-gateway on either port 5050 or 5051.

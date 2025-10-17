@@ -106,6 +106,5 @@ func main() {
 			DataChannel2 <- thisBufferStruct
 		}
 	}
-
 	os.Exit(0) // Main loop died
 }
