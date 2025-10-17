@@ -26,7 +26,8 @@
 
  `docker run --rm -it -e "PASSPHRASE_IN=password" -e "PASSPHRASE_OUT1=password" srt-gateway`
 
- There are 3 ports you can map
+ There are 3 ports you can map.
+ These are hardcoded in the binary, but can be modified via your Docker container configuration.
  ```
  :9800 - The ingest port (input) (srt listen mode)
  :9801 - The first sender (srt listen mode)
