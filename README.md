@@ -17,14 +17,18 @@
  Although it can run as a standalone binary, the project is intended to be run inside a Docker container.
 
  There are 3 passphrases you can define.  The first two are mandatory.
+ ```
  PASSPHRASE_IN - The passphrase for the ingest port (required)
  PASSPHRASE_OUT1 - The passphrase of the first sender (required)
  PASSPHRASE_OUT2 - The passphrase of the second sender (when defined, second sender is enabled)
+ ```
  
 
  `docker run --rm -it -e "PASSPHRASE_IN=password" -e "PASSPHRASE_OUT1=password" srt-gateway`
 
  There are 3 ports you can map
+ ```
  :9800 - The ingest port (input) (srt listen mode)
  :9801 - The first sender (srt listen mode)
  :9802 - The second sender (srt listen mode)
+ ```
