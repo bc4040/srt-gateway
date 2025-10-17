@@ -11,6 +11,11 @@
 
  This can be multiplied at scale by running multiple instances in Docker.
  
+## Build for Docker
+
+Clone this repository then run:
+`docker build -t srt-gateway:latest .`
+
  ## Running via Docker
  Although it can run as a standalone binary, the project is intended to be run inside a Docker container.
 
