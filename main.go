@@ -27,6 +27,12 @@ type bufferStruct struct {
 	length int
 }
 
+type DataChannel struct {
+	bufferStruct chan bufferStruct
+	channelOpen  bool
+	peerAddr     string
+}
+
 func main() {
 
 	// Load environment variables and check they exist
@@ -67,13 +73,28 @@ func main() {
 
 	// Make status bools to track if socket is open & streaming or not
 	var IngestOpen bool
-	var Channel1Open bool
-	var Channel2Open bool
 
-	//Make channels
-	IngestChannel := make(chan bufferStruct, 100)  // Inbound
-	DataChannel := make(chan bufferStruct, 10000)  // Outbound 1
-	DataChannel2 := make(chan bufferStruct, 10000) // Outbound 1
+	//Make list of active data channels
+	var ActiveDataChannels []DataChannel
+
+	//Make internal channel
+	IngestChannel := make(chan bufferStruct, 100) // Inbound
+
+	//Make flexible channels
+	DataChannel1 := DataChannel{
+		bufferStruct: make(chan bufferStruct, 10000),
+		channelOpen:  false,
+		peerAddr:     "0.0.0.0",
+	}
+
+	DataChannel2 := DataChannel{
+		bufferStruct: make(chan bufferStruct, 10000),
+		channelOpen:  false,
+		peerAddr:     "0.0.0.0",
+	}
+
+	ActiveDataChannels = append(ActiveDataChannels, DataChannel1)
+	ActiveDataChannels = append(ActiveDataChannels, DataChannel2)
 
 	// Call the ingester and await some data
 	go ingest(ingestport16, IngestChannel, &IngestOpen, ingestPassphrase)
@@ -85,25 +106,25 @@ func main() {
 
 	// Call the sender and await a connection
 	if sender1enabled == true {
-		go sender(sender1port16, DataChannel, &Channel1Open, sender1Passphrase)
+		go sender(sender1port16, &ActiveDataChannels[0], sender1Passphrase)
 	}
 
 	if sender2enabled == true {
-		go sender(sender2port16, DataChannel2, &Channel2Open, sender2Passphrase)
+		go sender(sender2port16, &ActiveDataChannels[1], sender2Passphrase)
 	}
 
 	for { // multiplex data as we get it from the ingester...
 		//fmt.Printf("-") // tick
 
-		thisBufferStruct := <-IngestChannel
+		thisBufferStruct := <-IngestChannel // as we get data from ingest
 		//fmt.Println(thisBufferGlob.seqno)
 
-		if Channel1Open {
-			DataChannel <- thisBufferStruct
+		// feed data into the active data channels...
+		for _, DataChannel := range ActiveDataChannels {
+			if DataChannel.channelOpen {
+				DataChannel.bufferStruct <- thisBufferStruct
+			}
 		}
 
-		if Channel2Open {
-			DataChannel2 <- thisBufferStruct
-		}
 	}
 }
