@@ -9,7 +9,7 @@
  Internet clients connect to srt-gateway and receive the SRT stream on the sender channels in caller mode.
 
 
- srt-gateway provides one ingest channel and two sender channels.
+ srt-gateway provides one ingest channel and two sender channels.  From the srt-gateway's perspective, all SRT connections are in "listener" mode.  This mean your local encoder and client viewers must connect to srt-gateway in caller mode.
 
  This can be multiplied at scale by running multiple instances in Docker.
  
@@ -36,8 +36,9 @@
 
 We can further define specific port mapping with Docker
 
-Example:
-We want to use port 5000 on the local LAN for ingest.  In this example the LAN IP address of the srt-gateway host is 192.168.1.100.
+### Example:
+We want to use port 5000 on the local LAN for ingest.  
+In this example the LAN IP address of the srt-gateway host is 192.168.1.100.
 
 We want to use port 5050 (sender 1) and 5051 (sender 2) on the WAN.  We'll define these on all interfaces.
 
